@@ -1,4 +1,24 @@
-import { ROLE_DISPLAY_NAMES } from "../store/slices/employeeSlice";
+export const Roles = {
+  ADMIN: 'ADMIN',
+  ACCOUNT_MANAGER: 'ACCOUNT_MANAGER',
+  RECRUITER: 'RECRUITER',
+  DELIVERY_MANAGER: 'DELIVERY_MANAGER',
+  PRACTICE_LEAD: 'PRACTICE_LEAD',
+  SALES_MANAGER: 'SALES_MANAGER',
+} as const;
+
+export type RoleKey = keyof typeof Roles;
+export type RoleValue = typeof Roles[RoleKey];
+
+// ====== Display Names ======
+export const ROLE_DISPLAY_NAMES: Record<RoleValue, string> = {
+  [Roles.ADMIN]: 'Admin',
+  [Roles.ACCOUNT_MANAGER]: 'Account Manager',
+  [Roles.RECRUITER]: 'Recruiter',
+  [Roles.DELIVERY_MANAGER]: 'Delivery Manager',
+  [Roles.PRACTICE_LEAD]: 'Practice Lead',
+  [Roles.SALES_MANAGER]: 'Sales Manager',
+};
 
 const ROLE_PERMISSIONS: Record<string, string[]> = {
 
@@ -35,4 +55,9 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
 
 };
 
-export { ROLE_PERMISSIONS }
+const CLIENT_ID = process.env.EXPO_PUBLIC_CLIENT_ID;
+const TENANT_ID = process.env.EXPO_PUBLIC_TENANT_ID;
+const AUTHORITY = `https://login.microsoftonline.com/${TENANT_ID}`;
+const SCOPES = ["openid", "profile", "email", "offline_access", `api://${CLIENT_ID}/app`];
+
+export { ROLE_PERMISSIONS, CLIENT_ID, TENANT_ID, AUTHORITY, SCOPES };

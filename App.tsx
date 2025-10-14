@@ -16,10 +16,12 @@ import { useEmployeeRoles } from "./hooks/useEmployee";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, Button } from "react-native";
 import CustomBottomNavBar from "./components/Layout/NavigationContainer";
 import { DrawerProvider } from "components/UI/Drawer/DrawerProvider";
 import { fetchEmployeeDashboard } from "store/slices/employeeSlice";
+import { useMicrosoftAuth } from "auth/microsoft";
+import { CLIENT_ID } from "./constants";
 
 export const BASENAME = "/staffx/";
 
@@ -28,6 +30,36 @@ const Tab = createBottomTabNavigator();
 
 function App() {
   console.log("App Rendered");
+  const { accessToken, refreshAccessToken, loading, promptAsync, request, logout } = useMicrosoftAuth();
+  console.log("AccessToken:", accessToken);
+  console.log("Loading:", loading);
+  console.log("CLIENT_ID : ", CLIENT_ID);
+
+  useEffect(() => { 
+    console.log("AccessToken changed:", accessToken);
+    if (accessToken) {
+      console.log("✅ Token ready, proceed to backend calls");
+    }
+  }, [accessToken]);
+
+  if (loading) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (!accessToken) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <Button title="Login with Microsoft" disabled={!request} onPress={() => {
+          console.log("Prompting for login...");
+          promptAsync();
+        }} />
+      </View>
+    );
+  }
   return (
     <Provider store={store}>
       <DrawerProvider>
@@ -74,7 +106,9 @@ const Bootstrap: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 /** ------------------- Tab Navigator ------------------- */
 const TabNavigator: FC = () => {
+  console.warn("Rendering TabNavigator");
   const { isAdmin, isSalesManager, isAccountManager, isRecruiter } = useEmployeeRoles();
+  console.warn("Roles - isAdmin:", isAdmin, "isSalesManager:", isSalesManager, "isAccountManager:", isAccountManager, "isRecruiter:", isRecruiter);
 
   const initialRoute = useMemo(() => {
     if (isAdmin || isSalesManager || isAccountManager) return "Clients";

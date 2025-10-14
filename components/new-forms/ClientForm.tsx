@@ -10,7 +10,7 @@ import TextField from '../form-fields/TextField';
 import SelectField from '../form-fields/SelectField';
 import { ContactCard } from './ContactCard';
 import type { ContactFormValues, RemovedContacts } from './ContactForm';
-import { Roles } from '../../store/slices/employeeSlice';
+import { Roles } from '../../constants';
 
 export interface AssignedRole {
   id: string;

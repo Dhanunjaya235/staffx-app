@@ -5,18 +5,7 @@ import { RootState } from '../index';
 import { DashboardOut } from '../../types/staffx-types';
 import { setPartialClients } from "./clientsSlice"; // adjust path
 import { setPartialVendors } from './vendorsSlice';
-// ====== Roles Constants ======
-export const Roles = {
-  ADMIN: 'ADMIN',
-  ACCOUNT_MANAGER: 'ACCOUNT_MANAGER',
-  RECRUITER: 'RECRUITER',
-  DELIVERY_MANAGER: 'DELIVERY_MANAGER',
-  PRACTICE_LEAD: 'PRACTICE_LEAD',
-  SALES_MANAGER: 'SALES_MANAGER',
-} as const;
-
-export type RoleKey = keyof typeof Roles;
-export type RoleValue = typeof Roles[RoleKey];
+import { Roles, RoleValue } from '../../constants';
 
 // ====== Slice State ======
 export interface EmployeeState {
@@ -154,12 +143,3 @@ export const selectEmployeePermissions = (state: RootState) => ({
   isSalesManager: state.employee.isSalesManager,
   loggedInEmployeeLoading: state.employee.loggedInEmployeeLoading
 });
-// ====== Display Names ======
-export const ROLE_DISPLAY_NAMES: Record<RoleValue, string> = {
-  [Roles.ADMIN]: 'Admin',
-  [Roles.ACCOUNT_MANAGER]: 'Account Manager',
-  [Roles.RECRUITER]: 'Recruiter',
-  [Roles.DELIVERY_MANAGER]: 'Delivery Manager',
-  [Roles.PRACTICE_LEAD]: 'Practice Lead',
-  [Roles.SALES_MANAGER]: 'Sales Manager',
-};

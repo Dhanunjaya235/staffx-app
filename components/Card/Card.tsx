@@ -164,7 +164,7 @@ function BaseCardComponent<T>({ item, extractors, fields, actions, onPress, onAc
 					) : null}
 
 					{fields && fields.length > 0 ? (
-						<View className="mt-10" testID="card-fields">
+						<View className="mt-1" testID="card-fields">
 							{fields.map((field, idx) => (
 								<View
 									key={(field.key as string) + '-' + idx}

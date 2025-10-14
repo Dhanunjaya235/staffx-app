@@ -82,8 +82,8 @@ const Clients: React.FC = () => {
 
   return (
     <ScrollView className="p-4 py-10 flex-1">
-      <View className='py-10' style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <Text className='text-red-500 font-bold text-lg mb-4 mt-4'>Clients</Text>
+      <View className='py-2' style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <Text className='text-[#394253] font-bold text-2xl mt-2'>Clients</Text>
         {(isAdmin || isSalesManager) && (
           <Button onPress={openCreateClientDrawer} icon={Plus} variant="primary">
             Add Client

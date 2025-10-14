@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import SelectField from '../components/form-fields/SelectField';
-import { ROLE_DISPLAY_NAMES } from '../store/slices/employeeSlice';
+import { ROLE_DISPLAY_NAMES } from '../constants';
 import { Edit, Shield } from 'lucide-react-native';
 import { rolesApi } from '../services/api/rolesApi';
 import { useApi } from '../hooks/useApi';

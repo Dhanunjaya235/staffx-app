@@ -5,7 +5,8 @@ import { RootState } from '../../store';
 import { useEmployeeRoles } from '../../hooks/useEmployee';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { UserCheck, Handshake, ListTodo, Shield } from 'lucide-react-native';
+import { UserCheck, Handshake, ListTodo, Shield, LogOut } from 'lucide-react-native';
+import { useMicrosoftAuth } from 'auth/microsoft';
 
 type RootTabParamList = {
   Clients: undefined;
@@ -50,6 +51,8 @@ export const CustomBottomNavBar: React.FC<BottomTabBarProps> = ({ state, navigat
     navigation.navigate(screenName as never);
   };
 
+  const {logout} = useMicrosoftAuth();
+
   return (
     <SafeAreaView edges={['bottom']} style={styles.container}>
       {menuItems.filter(item => item.display).map(item => {
@@ -72,6 +75,10 @@ export const CustomBottomNavBar: React.FC<BottomTabBarProps> = ({ state, navigat
           </TouchableOpacity>
         );
       })}
+      <LogOut onPress={() =>{
+        console.log("Logging out...");
+        logout();
+      }} />
     </SafeAreaView>
   );
 };
