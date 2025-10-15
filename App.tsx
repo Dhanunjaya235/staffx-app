@@ -1,4 +1,3 @@
-import "./polyfills";
 import React, { FC, useMemo, useEffect } from "react";
 import { Provider, useSelector } from "react-redux";
 import { RootState, store } from "./store";
