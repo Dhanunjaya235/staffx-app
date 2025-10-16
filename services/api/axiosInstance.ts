@@ -1,7 +1,6 @@
 import axios, { HttpStatusCode } from 'axios';
 import { getMicrosoftToken } from 'services/token/microsoft';
 import * as SecureStore from 'expo-secure-store';
-import { env } from 'expo-env';
 
 const AxiosInstance = axios.create({
   // baseURL: '%%{APIBaseURL}%%',

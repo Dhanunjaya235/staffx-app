@@ -75,10 +75,10 @@ export const CustomBottomNavBar: React.FC<BottomTabBarProps> = ({ state, navigat
           </TouchableOpacity>
         );
       })}
-      <LogOut onPress={() =>{
+      {/* <LogOut onPress={() =>{
         console.log("Logging out...");
         logout();
-      }} />
+      }} /> */}
     </SafeAreaView>
   );
 };
