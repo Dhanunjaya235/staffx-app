@@ -20,6 +20,7 @@ import Breadcrumb from "../components/UI/Breadcrumb/Breadcrumb";
 import ResourceDetails from "./ResourceDetails";
 import { ContactCard } from "../components/new-forms/ContactCard";
 import { ContactOut, VendorOut } from "../types/staffx-types";
+import StyledPagination from "components/UI/Pagination/Styled";
 
 const Vendors: React.FC = () => {
   const dispatch = useDispatch();
@@ -52,6 +53,13 @@ const Vendors: React.FC = () => {
     dispatch(setVendors(res.items));
     dispatch(setPartialVendors(res.items.map(v => ({ id: v.id, name: v.name }))));
   };
+    const onPageChange = (newPage: number, pageSize?: number) => {
+    setPage(newPage);
+    if (pageSize) {
+      setPageSize(pageSize);
+    }
+  };
+
 
   const openCreateVendorDrawer = () => {
     const drawerId = openDrawer({
@@ -163,8 +171,12 @@ const Vendors: React.FC = () => {
   }
 
   return (
-    <ScrollView className="p-6">
-      <View className="flex-row justify-between items-center mb-6">
+    <ScrollView stickyHeaderIndices={[0]}>
+      <View className="flex-row justify-between items-center mb-6 mt-6 pt-2 px-5"  style={{
+      backgroundColor: 'white', // makes header opaque
+      elevation: 4,              // adds shadow for Android
+      zIndex: 10,                // ensures header is above scroll content
+    }}>
         <Text className="text-2xl font-bold text-gray-900">Vendors</Text>
         <Button onPress={openCreateVendorDrawer} icon={Plus} iconPosition="left">
           Add Vendor
@@ -172,6 +184,8 @@ const Vendors: React.FC = () => {
       </View>
 
       <VendorsCardList />
+      {total && <StyledPagination page={page} pageSize={pageSize}  total={total} onPageChange={onPageChange} />}
+
     </ScrollView>
   );
 };
@@ -393,7 +407,7 @@ const VendorsCardList: React.FC = () => {
 		{ key: 'contacts', label: 'Contacts', render: (v) => Array.isArray(v) ? `${v.length}` : '—' },
 	];
 
-	const actions: CardAction[] = [];
+	const actions: CardAction<VendorOut>[] = [];
 
 	return (
 		<CardList

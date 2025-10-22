@@ -20,7 +20,7 @@ export const rolesApi = {
     const response = await AxiosInstance.get<PaginatedEmployeeRoleMappings>('/employee-role-mappings/', {
       params: {
         page: params?.page ?? 1,
-        page_size: params?.page_size ?? 100,
+        page_size: 1000,
       },
     });
     return response.data;

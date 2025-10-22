@@ -47,7 +47,7 @@ function FieldRow<T>({ item, field }: { item: T; field: FieldConfig<T> }) {
 		: (rawValue == null || rawValue === ''
 			? '—'
 			: String(rawValue));
-	const numberOfLines = field.numberOfLines ?? 1;
+	const numberOfLines = typeof field.numberOfLines === 'function' ? field.numberOfLines(item) : field.numberOfLines ?? 1;
 	return (
 		<View className="flex-row items-center py-2">
 			{field.label ? (
@@ -105,7 +105,7 @@ function ActionsRow<T>({ actions, onActionPress, item }: { actions?: CardProps<T
 	return (
 		<View className="flex-row justify-end items-center gap-2 mt-3">
 			{actions.map(action => (
-				<Pressable
+				action?.rendor ? action.rendor(item) :<Pressable
 					key={action.key}
 					className="min-w-[44px] min-h-[44px] px-3 py-2 rounded-md bg-neutral-100 dark:bg-neutral-800"
 					onPress={() => onActionPress && onActionPress(action, item)}
@@ -126,6 +126,7 @@ function BaseCardComponent<T>({ item, extractors, fields, actions, onPress, onAc
 	const avatarUrl = extractors.getAvatarUrl ? extractors.getAvatarUrl(item) : undefined;
 	const avatarText = extractors.getAvatarText ? extractors.getAvatarText(item) : undefined;
 	const meta = extractors.getMetaPill ? extractors.getMetaPill(item) : undefined;
+	const metaComponent = extractors.getMetaComponent ? extractors.getMetaComponent(item) : undefined;
 
 	const Container = onPress ? Pressable : View;
 
@@ -153,7 +154,7 @@ function BaseCardComponent<T>({ item, extractors, fields, actions, onPress, onAc
 						<Text className="font-semibold text-base text-neutral-900 dark:text-neutral-100 flex-shrink" numberOfLines={1} testID="card-title">
 							{title}
 						</Text>
-						{meta?.text ? (
+						{metaComponent ? metaComponent : meta?.text ? (
 							<View className={`px-2 py-0.5 rounded-full ${toneClasses(meta.tone)}`} testID="card-meta-pill">
 								<Text className="text-xs">{meta.text}</Text>
 							</View>

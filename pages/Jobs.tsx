@@ -19,6 +19,7 @@ import {debounce} from 'lodash';
 import { useEmployeeRoles } from '../hooks/useEmployee';
 import JobViewForm from '../components/new-forms/JobViewForm';
 import ConfirmationPopup from '../components/UI/popups/Confirmation';
+import StyledPagination from 'components/UI/Pagination/Styled';
 
 interface JobsProps {
   embedded?: boolean;
@@ -35,8 +36,8 @@ const Jobs: React.FC<JobsProps> = ({ embedded = false, clientId, onOpenResources
   const createJob = useApi(jobsApi.create);
   const updateJob = useApi(jobsApi.update);
 
-  const [page] = useState(1);
-  const [pageSize] = useState(10);
+  const [page,setPage] = useState(1);
+  const [pageSize,setPageSize] = useState(10);
   const [total] = useState(0);
   const [jobFilters, setJobFilters] = useState<{ [key: string]: string | null }>({});
   const [inlineView, setInlineView] = useState<'jobs' | 'resources' | 'resourceDetails'>('jobs');
@@ -47,6 +48,13 @@ const Jobs: React.FC<JobsProps> = ({ embedded = false, clientId, onOpenResources
   const { isAdmin, isSalesManager, isAccountManager } = useEmployeeRoles();
 
   const clientFilter = embedded ? clientId || null : undefined;
+  
+    const onPageChange = (newPage: number, pageSize?: number) => {
+    setPage(newPage);
+    if (pageSize) {
+      setPageSize(pageSize);
+    }
+  };
 
   // pagination controls not used in mobile CardList
 
@@ -134,6 +142,8 @@ const Jobs: React.FC<JobsProps> = ({ embedded = false, clientId, onOpenResources
     });
   };
 
+
+
   // legacy table column config retained above; mobile view uses CardList below
 
   if (inlineView === 'resourceDetails' && selectedResourceId) {
@@ -156,17 +166,21 @@ const Jobs: React.FC<JobsProps> = ({ embedded = false, clientId, onOpenResources
   }
 
   return (
-    <ScrollView className="p-4 flex-1">
-      <View className="flex-row justify-between items-center mb-4">
+    <ScrollView stickyHeaderIndices={[0]}>
+          <View className="flex-row justify-between items-center mb-6 mt-6 pt-2 px-5"  style={{
+          backgroundColor: 'white', // makes header opaque
+          elevation: 4,              // adds shadow for Android
+          zIndex: 10,                // ensures header is above scroll content
+        }}>
         <Text className="text-2xl font-bold">Requirements {clientName && `for ${clientName}`}</Text>
         <View className="flex-row space-x-2 items-center">
-          {!embedded && (
+          {/* {!embedded && (
             <TextInput
               placeholder="Search by requirement title or role"
               className="border border-gray-300 rounded px-2 py-1 w-60 text-sm"
               onChangeText={debouncedFilterChange}
             />
-          )}
+          )} */}
           {(isAdmin || isSalesManager || isAccountManager) && (
             <Button onPress={openCreateJobDrawer} icon={Plus} iconPosition="left">
               Add Requirement
@@ -187,6 +201,8 @@ const Jobs: React.FC<JobsProps> = ({ embedded = false, clientId, onOpenResources
       />
 
       <JobsCardList />
+      {total && <StyledPagination page={page} pageSize={pageSize}  total={total} onPageChange={onPageChange} />}
+
     </ScrollView>
   );
 };

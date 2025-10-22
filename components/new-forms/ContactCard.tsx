@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useWatch, Control, useFormState } from "react-hook-form";
 import ContactForm, { ContactFormValues } from "./ContactForm";
-import {Edit, Delete} from "lucide-react-native"
+import {Edit, Trash} from "lucide-react-native"
 interface ContactCardProps {
   contact: ContactFormValues;
   index: number;
@@ -72,7 +72,7 @@ export const ContactCard: React.FC<ContactCardProps> = ({
           <Edit size={20} color="#394253" />
         </TouchableOpacity>
         <TouchableOpacity onPress={onDelete}>
-          <Delete size={20} color="#d32f2f" />
+          <Trash size={20} color="#d32f2f" />
         </TouchableOpacity>
       </View>
     </View>
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     marginBottom: 10,
-    flexDirection: "row",
+    flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "flex-start",
   },

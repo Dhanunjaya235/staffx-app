@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
-import { setUsers, setRoles, setEmployees, setEmployeesPractices } from '../store/slices/usersSlice';
+import { setUsers, setRoles, setEmployees, setEmployeesPractices, Role, Employee } from '../store/slices/usersSlice';
 import { useDrawer } from '../components/UI/Drawer/DrawerProvider';
 import Button from '../components/UI/Button/Button';
 import { useForm } from 'react-hook-form';
@@ -10,6 +10,8 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import SelectField from '../components/form-fields/SelectField';
 import { ROLE_DISPLAY_NAMES } from '../constants';
+
+type RoleValue = keyof typeof ROLE_DISPLAY_NAMES;
 import { Edit, Shield } from 'lucide-react-native';
 import { rolesApi } from '../services/api/rolesApi';
 import { useApi } from '../hooks/useApi';
@@ -17,7 +19,7 @@ import { useEmployeeRoles } from '../hooks/useEmployee';
 import { useNavigation } from '@react-navigation/native';
 import { FlatList, TouchableOpacity } from 'react-native';
 import { CardList } from '../components/Card/CardList';
-import type { Extractors, FieldConfig } from '../types/card';
+import type { CardAction, Extractors, FieldConfig } from '../types/card';
 import { ROLE_PERMISSIONS } from '../constants';
 
 export interface EmployeeWithRoles {
@@ -61,8 +63,8 @@ const RoleAssignment: React.FC = () => {
       .then(response => {
         dispatch(setUsers(response.items));
         dispatch(setEmployeesPractices(response.employees_with_practices));
-        if (response.roles && Array.isArray(response.roles)) dispatch(setRoles(response.roles));
-        if (response.employees && Array.isArray(response.employees)) dispatch(setEmployees(response.employees));
+        if (response.roles && Array.isArray(response.roles)) dispatch(setRoles(response.roles as Role[]));
+        if (response.employees && Array.isArray(response.employees)) dispatch(setEmployees(response.employees as Employee[]));
       })
       .catch(console.error);
   }, [dispatch]);
@@ -98,6 +100,7 @@ const RoleAssignment: React.FC = () => {
   const roleDisplayList = Object.values(ROLE_DISPLAY_NAMES);
 
   const openAssignRoleDrawer = (user?: any, mode?: string) => {
+    console.log('Opening Assign Role Drawer for user:', user);
     openDrawer({
       title: user ? `Edit Roles for - ${user.employee_name}` : 'Assign Role',
       content: <AssignRoleForm user={user} allRoles={users} mode={mode || 'create'} />,
@@ -105,39 +108,13 @@ const RoleAssignment: React.FC = () => {
     });
   };
 
-  const renderItem = ({ item }: { item: EmployeeWithRoles }) => (
-    <View className="p-3 border-b border-gray-200">
-      <Text className="font-semibold">{item.employee_name}</Text>
-      <Text className="text-gray-700">{item.employee_email}</Text>
-
-      <View className="flex-row flex-wrap gap-2 mt-1">
-        {item.roles.map(r => (
-          <View key={r} className="px-2 py-1 rounded-[5px] bg-blue-100">
-            <Text className="text-blue-800 text-xs">{ROLE_DISPLAY_NAMES[r] || r}</Text>
-          </View>
-        ))}
-        {item.practices.length > 0 && (
-          <View className="px-2 py-1 rounded-[5px] bg-yellow-100">
-            <Text className="text-yellow-800 text-xs">Practice Lead</Text>
-          </View>
-        )}
-      </View>
-
-      {item.roles.length > 0 && (
-        <Button
-          size="sm"
-          variant="secondary"
-          onPress={() => openAssignRoleDrawer(item, 'edit')}
-        >
-          <Edit className="w-4 h-4" />
-        </Button>
-      )}
-    </View>
-  );
-
   return (
-    <ScrollView className="p-6">
-      <View className="flex-row justify-between items-center mb-6">
+    <ScrollView stickyHeaderIndices={[0]}>
+      <View className="flex-row justify-around items-center mb-6 mt-6 pt-2"  style={{
+      backgroundColor: 'white', // makes header opaque
+      elevation: 4,              // adds shadow for Android
+      zIndex: 10,                // ensures header is above scroll content
+    }}>
         <Text className="text-2xl font-bold text-gray-900">Role Assignment</Text>
         <Button
           onPress={() => openAssignRoleDrawer()}
@@ -149,7 +126,19 @@ const RoleAssignment: React.FC = () => {
         </Button>
       </View>
 
-      <RoleAssignmentsCardList items={employeesWithRoles} />
+      <RoleAssignmentsCardList items={employeesWithRoles} actions={[{
+        key:'edit',
+        label:'Edit Roles',
+        rendor: (item) => (
+          <Button
+            size="xs"
+            variant="secondary"
+            onPress={() => openAssignRoleDrawer(item, 'edit')}
+          >
+            <Edit width={17} height={17} />
+          </Button>
+        ),
+      }]} />
     </ScrollView>
   );
 };
@@ -185,6 +174,13 @@ export const AssignRoleForm: React.FC<AssignRoleFormProps> = ({ user, allRoles, 
     resolver: yupResolver(schema),
   });
 
+  useEffect(() => {
+    console.log('Form default values:', {
+      employeeId: user?.employee_id?.toString() || '',
+      roleIds: user?.roles ? roles.filter(r => user.roles.includes(r.name)).map(r => r.id.toString()) : [],
+    },roles);
+   }, [roles, user]);
+
   const createRoleMappings = useApi(rolesApi.create);
   const updateRoleMappings = useApi(rolesApi.update);
   const getRoleMappings = useApi(rolesApi.list);
@@ -219,8 +215,8 @@ export const AssignRoleForm: React.FC<AssignRoleFormProps> = ({ user, allRoles, 
 
       const refreshed = await getRoleMappings.execute();
       dispatch(setUsers(refreshed.items));
-      if (Array.isArray(refreshed.roles)) dispatch(setRoles(refreshed.roles));
-      if (Array.isArray(refreshed.employees)) dispatch(setEmployees(refreshed.employees));
+      if (Array.isArray(refreshed.roles)) dispatch(setRoles(refreshed.roles as Role[]));
+      if (Array.isArray(refreshed.employees)) dispatch(setEmployees(refreshed.employees as Employee[]));
       if (Array.isArray(refreshed.employees_with_practices)) dispatch(setEmployeesPractices(refreshed.employees_with_practices));
 
       closeAllDrawers();
@@ -299,7 +295,7 @@ export const AssignRoleForm: React.FC<AssignRoleFormProps> = ({ user, allRoles, 
 
 export default RoleAssignment;
 
-const RoleAssignmentsCardList: React.FC<{ items: EmployeeWithRoles[] }> = ({ items }) => {
+const RoleAssignmentsCardList: React.FC<{ items: EmployeeWithRoles[], actions?:CardAction<EmployeeWithRoles>[] }> = ({ items,actions=[] }) => {
 	const extractors: Extractors<EmployeeWithRoles> = {
 		getId: (i) => String(i.employee_id),
 		getTitle: (i) => i.employee_name,
@@ -309,8 +305,8 @@ const RoleAssignmentsCardList: React.FC<{ items: EmployeeWithRoles[] }> = ({ ite
 	};
 
 	const fields: FieldConfig<EmployeeWithRoles>[] = [
-		{ key: 'roles', label: 'Roles', render: (v) => Array.isArray(v) && v.length ? (v as string[]).join(', ') : '—', numberOfLines: 2 },
-		{ key: 'practices', label: 'Practices', render: (v) => Array.isArray(v) && v.length ? (v as string[]).join(', ') : '—', numberOfLines: 2 },
+		{ key: 'roles', label: 'Roles', render: (v) => Array.isArray(v) && v.length ? v.map(roleKey => ROLE_DISPLAY_NAMES[roleKey as RoleValue] || roleKey).join(', ') : '—', numberOfLines: (item) => Math.max(1, item.roles.length) },
+		{ key: 'practices', label: 'Practices', render: (v) => Array.isArray(v) && v.length ? (v as string[]).join(', ') : '—',  numberOfLines: (item) => Math.max(1, item.practices.length) },
 	];
 
 	return (
@@ -319,6 +315,7 @@ const RoleAssignmentsCardList: React.FC<{ items: EmployeeWithRoles[] }> = ({ ite
 			extractors={extractors}
 			fields={fields}
 			testID="roleassign-card-list"
+      actions={actions}
 		/>
 	);
 };

@@ -6,7 +6,7 @@ interface ButtonProps {
   children: React.ReactNode;
   onPress?: () => void;
   variant?: 'primary' | 'secondary' | 'danger' | 'success';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xs';
   icon?: typeof LucideIcon;
   iconPosition?: 'left' | 'right';
   disabled?: boolean;
@@ -33,6 +33,7 @@ const Button: React.FC<ButtonProps> = ({
   };
 
   const sizeClasses = {
+    xs: 'px-1.5 py-1.5 text-xs',
     sm: 'px-3 py-2 text-sm',
     md: 'px-4 py-3 text-sm',
     lg: 'px-6 py-4 text-base',

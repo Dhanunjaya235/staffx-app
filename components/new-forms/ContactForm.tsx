@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   inputsRow: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     gap: 8, // if using RN >=0.71
     marginBottom: 12,

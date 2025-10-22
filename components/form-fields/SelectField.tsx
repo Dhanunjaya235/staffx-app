@@ -67,6 +67,9 @@ const SelectField = <T extends any>({
             ? Array.isArray(field.value) && field.value.length > 0
             : field.value !== null && field.value !== undefined && field.value !== '';
           const hasMultipleValues = multiple && Array.isArray(field.value) && field.value.length > 0;
+          if(multiple){
+            console.log("SelectField Multiple Values -", field.value);
+          }
 
           const selectedOption = !multiple && hasValue
             ? options.find(opt => String(getOptionValue(opt, valueKey)) === String(field.value))
@@ -140,7 +143,7 @@ const SelectField = <T extends any>({
                       ))}
                     </View>
                   )}
-                  {!multiple && <TextInput
+                  {<TextInput
                     className="flex-1 text-gray-900"
                     placeholder={hasValue ? '' : (placeholder || 'Select option...')}
                     value={inputDisplayValue}

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "my-expo-app",
-    "slug": "my-expo-app",
+    "name": "StaffX",
+    "slug": "staffx",
     "version": "1.0.0",
     "scheme": "staffx",
     "web": {
@@ -16,10 +16,10 @@
       "expo-web-browser"
     ],
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/staffx.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/staffx.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -32,7 +32,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/staffx.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.staffx.myexpoapp"
